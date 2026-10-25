@@ -3,149 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>第6課 歌劇停看聽 · 40題深度密室挑戰</title>
+  <title>斯卡拉歌劇院 · 終極開演前密室</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * { -webkit-tap-highlight-color: transparent; }
-    .gold-title {
-      background: linear-gradient(135deg, #fde68a 0%, #d97706 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .gold-glow {
+      text-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
     }
-    .card-transition {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    .parchment {
+      background: #2a241e;
+      background-image: radial-gradient(#3a322a 1px, transparent 1px);
+      background-size: 16px 16px;
     }
-    .card-transition:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.25);
+    .clickable-prop {
+      transition: all 0.25s ease;
+    }
+    .clickable-prop:hover {
+      transform: scale(1.03);
+      filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.4));
     }
   </style>
 </head>
 <body class="bg-stone-950 text-stone-100 min-h-screen flex flex-col font-sans select-none antialiased">
 
-  <!-- 頂部標題列 -->
-  <header class="bg-gradient-to-r from-red-950 via-stone-900 to-red-950 border-b border-amber-800/40 px-6 py-4 flex items-center justify-between shadow-lg">
+  <!-- 頂部：劇院廣播與開演倒數 HUD -->
+  <header class="bg-stone-900 border-b border-amber-800/40 px-6 py-3 flex items-center justify-between shadow-lg sticky top-0 z-40">
     <div class="flex items-center space-x-3">
-      <span class="text-3xl">🎭</span>
+      <span class="text-2xl animate-pulse">🔴</span>
       <div>
-        <h1 class="text-xl md:text-2xl font-bold tracking-wide gold-title">歌劇停看聽 · 40關大挑戰</h1>
-        <p class="text-xs text-amber-200/70 hidden sm:block">涵蓋歌劇起源、經典特色與四大歌劇大師完整題庫</p>
+        <h1 class="text-base md:text-lg font-bold text-amber-300 gold-glow">後台緊急狀況 · 首演倒數中</h1>
+        <p id="director-msg" class="text-[11px] text-amber-200/70">劇院廣播：大門已被誤鎖，請在管弦樂團序曲結束前解開四處機關！</p>
       </div>
     </div>
-    <div class="flex items-center space-x-3">
-      <span id="progress-badge" class="text-xs md:text-sm bg-red-900/60 border border-amber-600/50 px-3 py-1.5 rounded-full text-amber-200 font-mono">
-        全劇解謎：0 / 4 展區
-      </span>
-      <button onclick="resetGame()" class="text-xs bg-stone-800 hover:bg-stone-700 border border-stone-600 px-3 py-1.5 rounded text-stone-300 transition">
-        重設進度
-      </button>
+    <div class="flex items-center space-x-4">
+      <div class="text-right">
+        <span class="text-[10px] text-stone-400 block">距離大幕升起</span>
+        <span id="countdown-timer" class="font-mono text-base md:text-xl font-bold text-red-400 tracking-wider">15:00</span>
+      </div>
+      <button onclick="resetGame()" class="text-xs bg-stone-800 hover:bg-stone-700 border border-stone-600 px-2.5 py-1.5 rounded text-stone-300">重置</button>
     </div>
   </header>
 
-  <!-- 主內容區 -->
+  <!-- 主場景：後台全景互動圖 -->
   <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
 
-    <div class="bg-stone-900/90 border border-amber-900/50 rounded-2xl p-5 shadow-xl">
-      <h2 class="text-base md:text-lg font-bold text-amber-300 flex items-center gap-2 mb-2">
-        <span>📜</span> 劇院終極挑戰任務
-      </h2>
-      <p class="text-stone-300 text-xs md:text-sm leading-relaxed">
-        本挑戰依據「第6課 歌劇停看聽」共設四大展區，每區各 10 題（含名曲聆賞與聽辨）。每區全數通過後可獲得 1 碼密碼，集齊 4 碼即可開啟舞台大門！
-      </p>
-    </div>
-
-    <!-- 4 個展區卡片 -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-
-      <!-- 區 1 -->
-      <div onclick="openModal('origin')" class="bg-stone-900/80 border border-stone-800 hover:border-amber-500 rounded-2xl p-5 cursor-pointer card-transition flex flex-col justify-between">
-        <div>
-          <div class="flex justify-between items-start mb-3">
-            <span class="text-3xl">🏛️</span>
-            <span id="badge-origin" class="text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded font-mono">0 / 10 題</span>
-          </div>
-          <h3 class="font-bold text-amber-200 text-sm mb-1">第一區：起源與特色</h3>
-          <p class="text-stone-400 text-xs leading-relaxed">同好會、失傳與現存歌劇、公眾劇院、四流派與各國類型。</p>
-        </div>
-        <div class="mt-4 pt-3 border-t border-stone-800 flex justify-between items-center text-xs text-amber-400">
-          <span id="status-origin">點擊開始答題</span>
-          <span>➜</span>
-        </div>
+    <!-- 道具探索區（情境房間） -->
+    <div class="relative bg-gradient-to-b from-stone-900 to-stone-950 border-2 border-amber-900/40 rounded-3xl p-6 md:p-8 shadow-2xl overflow-hidden min-h-[380px] flex flex-col justify-between">
+      
+      <!-- 背景劇院裝飾文字 -->
+      <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+        <span class="text-9xl font-serif text-amber-500">TEATRO</span>
       </div>
 
-      <!-- 區 2 -->
-      <div onclick="openModal('mozart')" class="bg-stone-900/80 border border-stone-800 hover:border-amber-500 rounded-2xl p-5 cursor-pointer card-transition flex flex-col justify-between">
-        <div>
-          <div class="flex justify-between items-start mb-3">
-            <span class="text-3xl">🪞</span>
-            <span id="badge-mozart" class="text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded font-mono">0 / 10 題</span>
-          </div>
-          <h3 class="font-bold text-amber-200 text-sm mb-1">第二區：莫札特之聲</h3>
-          <p class="text-stone-400 text-xs leading-relaxed">《費加洛婚禮》、《魔笛》角色關係、詠嘆調情境與名曲聆賞。</p>
-        </div>
-        <div class="mt-4 pt-3 border-t border-stone-800 flex justify-between items-center text-xs text-amber-400">
-          <span id="status-mozart">點擊開始答題</span>
-          <span>➜</span>
-        </div>
+      <!-- 房間說明條 -->
+      <div class="flex justify-between items-center text-xs text-stone-400 z-10 border-b border-stone-800 pb-3">
+        <span>📍 目前位置：斯卡拉大劇院 · 總監密室與道具工坊</span>
+        <span>點擊房間內閃爍的 4 個物件進行搜查 🔍</span>
       </div>
 
-      <!-- 區 3 -->
-      <div onclick="openModal('verdi_wagner')" class="bg-stone-900/80 border border-stone-800 hover:border-amber-500 rounded-2xl p-5 cursor-pointer card-transition flex flex-col justify-between">
-        <div>
-          <div class="flex justify-between items-start mb-3">
-            <span class="text-3xl">🛡️</span>
-            <span id="badge-verdi_wagner" class="text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded font-mono">0 / 10 題</span>
-          </div>
-          <h3 class="font-bold text-amber-200 text-sm mb-1">第三區：浪漫主義雙雄</h3>
-          <p class="text-stone-400 text-xs leading-relaxed">威爾第《茶花女》名曲、華格納樂劇《指環》與女武神的主導動機。</p>
+      <!-- 4 大實體物件互動點 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 my-auto z-10 py-6">
+        
+        <!-- 物件 1：同好會的羊皮卷軸箱 -->
+        <div onclick="openZone('origin')" class="clickable-prop bg-stone-900/90 border border-amber-700/40 rounded-2xl p-4 text-center cursor-pointer flex flex-col items-center justify-center">
+          <div class="text-4xl md:text-5xl mb-2">📜</div>
+          <span class="text-xs md:text-sm font-bold text-amber-200">羊皮紙古卷箱</span>
+          <span id="label-origin" class="text-[10px] text-stone-400 mt-1">未檢視</span>
         </div>
-        <div class="mt-4 pt-3 border-t border-stone-800 flex justify-between items-center text-xs text-amber-400">
-          <span id="status-verdi_wagner">點擊開始答題</span>
-          <span>➜</span>
+
+        <!-- 物件 2：主角化妝鏡台 -->
+        <div onclick="openZone('mozart')" class="clickable-prop bg-stone-900/90 border border-amber-700/40 rounded-2xl p-4 text-center cursor-pointer flex flex-col items-center justify-center">
+          <div class="text-4xl md:text-5xl mb-2">🪞</div>
+          <span class="text-xs md:text-sm font-bold text-amber-200">貴族化妝鏡台</span>
+          <span id="label-mozart" class="text-[10px] text-stone-400 mt-1">未檢視</span>
         </div>
+
+        <!-- 物件 3：鐵甲與配劍道具架 -->
+        <div onclick="openZone('verdi_wagner')" class="clickable-prop bg-stone-900/90 border border-amber-700/40 rounded-2xl p-4 text-center cursor-pointer flex flex-col items-center justify-center">
+          <div class="text-4xl md:text-5xl mb-2">🛡️</div>
+          <span class="text-xs md:text-sm font-bold text-amber-200">女武神裝備架</span>
+          <span id="label-verdi_wagner" class="text-[10px] text-stone-400 mt-1">未檢視</span>
+        </div>
+
+        <!-- 物件 4：東方木雕古琴 -->
+        <div onclick="openZone('puccini')" class="clickable-prop bg-stone-900/90 border border-amber-700/40 rounded-2xl p-4 text-center cursor-pointer flex flex-col items-center justify-center">
+          <div class="text-4xl md:text-5xl mb-2">🏮</div>
+          <span class="text-xs md:text-sm font-bold text-amber-200">北京城宮廷長桌</span>
+          <span id="label-puccini" class="text-[10px] text-stone-400 mt-1">未檢視</span>
+        </div>
+
       </div>
 
-      <!-- 區 4 -->
-      <div onclick="openModal('puccini')" class="bg-stone-900/80 border border-stone-800 hover:border-amber-500 rounded-2xl p-5 cursor-pointer card-transition flex flex-col justify-between">
-        <div>
-          <div class="flex justify-between items-start mb-3">
-            <span class="text-3xl">🎹</span>
-            <span id="badge-puccini" class="text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded font-mono">0 / 10 題</span>
-          </div>
-          <h3 class="font-bold text-amber-200 text-sm mb-1">第四區：寫實大師浦契尼</h3>
-          <p class="text-stone-400 text-xs leading-relaxed">《波希米亞人》閣樓生活、《杜蘭朵》招親三道謎題與茉莉花實作。</p>
-        </div>
-        <div class="mt-4 pt-3 border-t border-stone-800 flex justify-between items-center text-xs text-amber-400">
-          <span id="status-puccini">點擊開始答題</span>
-          <span>➜</span>
+      <!-- 底部玩家隨身道具包（Inventory） -->
+      <div class="z-10 bg-stone-900/95 border border-stone-800 rounded-xl p-3 flex items-center justify-between">
+        <span class="text-xs text-amber-300 font-bold flex items-center gap-1.5">
+          <span>🎒</span> 搜集到的關鍵信物：
+        </span>
+        <div class="flex gap-2">
+          <span id="slot-origin" class="px-2.5 py-1 bg-stone-950 border border-stone-700 rounded text-xs text-stone-500 font-mono">［空］</span>
+          <span id="slot-mozart" class="px-2.5 py-1 bg-stone-950 border border-stone-700 rounded text-xs text-stone-500 font-mono">［空］</span>
+          <span id="slot-verdi_wagner" class="px-2.5 py-1 bg-stone-950 border border-stone-700 rounded text-xs text-stone-500 font-mono">［空］</span>
+          <span id="slot-puccini" class="px-2.5 py-1 bg-stone-950 border border-stone-700 rounded text-xs text-stone-500 font-mono">［空］</span>
         </div>
       </div>
 
     </div>
 
-    <!-- 終極解鎖區 -->
-    <div class="bg-stone-900/95 border border-amber-700/50 rounded-2xl p-5 md:p-6 mt-auto flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl">
-      <div class="text-center md:text-left">
-        <h3 class="text-amber-200 font-bold text-base flex items-center justify-center md:justify-start gap-2">
-          <span>🚪</span> 後台密碼門
+    <!-- 舞台出口厚重大門 -->
+    <div class="bg-stone-900 border border-amber-700/40 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <h3 class="font-bold text-amber-300 text-sm md:text-base flex items-center gap-2">
+          <span>🚪</span> 後台通往主舞台的鐵製暗門
         </h3>
-        <p class="text-xs text-stone-400 mt-1">四大展區全數通關後可獲得一組 4 碼密碼，輸入解開舞台大門！</p>
+        <p class="text-xs text-stone-400 mt-0.5">將 4 樣信物上所刻印的密碼數字依序輸入，以解鎖轉輪門栓。</p>
       </div>
-      <div class="flex items-center space-x-2 w-full md:w-auto justify-center">
+      <div class="flex items-center space-x-2">
         <input type="text" id="final-code" placeholder="4 碼密碼" maxlength="4"
-               class="bg-stone-950 border border-amber-600/60 rounded-xl px-4 py-2 text-center font-mono tracking-widest text-amber-300 w-36 focus:outline-none focus:ring-2 focus:ring-amber-500 text-lg">
-        <button onclick="verifyFinalEscape()" class="bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold px-6 py-2.5 rounded-xl transition shadow">
-          解鎖登台
+               class="bg-stone-950 border border-amber-600 rounded-xl px-4 py-2 text-center font-mono tracking-widest text-amber-300 w-36 text-lg focus:outline-none">
+        <button onclick="escapeStage()" class="bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold px-5 py-2 rounded-xl text-sm transition">
+          推開大門
         </button>
       </div>
     </div>
 
   </main>
 
-  <!-- 燈箱視窗 (Modal) -->
+  <!-- 調查燈箱（全擬真信箋/便條風格） -->
   <div id="modal-container" style="display: none;" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-stone-900 border border-amber-600/50 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+    <div class="parchment border-2 border-amber-700/60 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <button onclick="closeModal()" class="absolute top-4 right-4 text-stone-400 hover:text-white text-xl p-1">✕</button>
       <div id="modal-content"></div>
     </div>
@@ -153,7 +139,7 @@
 
   <script>
     /* =========================================================
-       1. 音訊核心（Web Audio API）
+       1. 音訊核心
     ========================================================= */
     const Sound = {
       ctx: null,
@@ -168,16 +154,12 @@
         const start = this.ctx.currentTime + when;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-
         osc.type = type;
         osc.frequency.setValueAtTime(freq, start);
-
         gain.gain.setValueAtTime(0.3, start);
         gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-
         osc.start(start);
         osc.stop(start + duration);
       },
@@ -187,386 +169,181 @@
         this.playTone(783.99, 'triangle', 0.35, 0.2);
       },
       error() {
-        this.playTone(180, 'sawtooth', 0.28, 0);
+        this.playTone(160, 'sawtooth', 0.3, 0);
       },
-      // 名曲聆賞 1：《費加洛婚禮》序曲
-      playFigaroOverture() {
+      playFigaro() {
         this.init();
         const notes = [293.66, 329.63, 370, 392, 440, 392, 370, 329.63, 293.66];
         notes.forEach((f, idx) => this.playTone(f, 'triangle', 0.16, idx * 0.1));
       },
-      // 名曲聆賞 2：《茶花女》飲酒歌
       playDrinkingSong() {
         this.init();
         const seq = [
-          { f: 311.13, d: 0.22, t: 0 },
-          { f: 392.00, d: 0.22, t: 0.22 },
-          { f: 466.16, d: 0.22, t: 0.44 },
-          { f: 523.25, d: 0.4, t: 0.66 },
-          { f: 466.16, d: 0.4, t: 1.05 }
+          { f: 311.13, d: 0.22, t: 0 }, { f: 392.00, d: 0.22, t: 0.22 },
+          { f: 466.16, d: 0.22, t: 0.44 }, { f: 523.25, d: 0.4, t: 0.66 }, { f: 466.16, d: 0.4, t: 1.05 }
         ];
         seq.forEach(n => this.playTone(n.f, 'sine', n.d, n.t));
       },
-      // 名曲聆賞 3：《女武神的飛行》主導動機
-      playValkyrieMotif() {
+      playValkyrie() {
         this.init();
         const seq = [
-          { f: 293.66, d: 0.18, t: 0 },    // D4
-          { f: 370.00, d: 0.18, t: 0.18 }, // F#4
-          { f: 440.00, d: 0.3, t: 0.36 },  // A4
-          { f: 370.00, d: 0.18, t: 0.68 }, // F#4
-          { f: 293.66, d: 0.4, t: 0.88 }   // D4
+          { f: 293.66, d: 0.18, t: 0 }, { f: 370.00, d: 0.18, t: 0.18 },
+          { f: 440.00, d: 0.3, t: 0.36 }, { f: 370.00, d: 0.18, t: 0.68 }, { f: 293.66, d: 0.4, t: 0.88 }
         ];
         seq.forEach(n => this.playTone(n.f, 'sawtooth', n.d, n.t));
       },
-      // 名曲聆賞 4：《杜蘭朵》公主徹夜未眠核心動機
       playNessunDorma() {
         this.init();
         const seq = [
-          { f: 329.63, d: 0.4, t: 0 },     // E4 (Nes-)
-          { f: 349.23, d: 0.4, t: 0.38 },  // F4 (-sun)
-          { f: 329.63, d: 0.8, t: 0.76 }   // E4 (dor-ma)
+          { f: 329.63, d: 0.4, t: 0 }, { f: 349.23, d: 0.4, t: 0.38 }, { f: 329.63, d: 0.8, t: 0.76 }
         ];
         seq.forEach(n => this.playTone(n.f, 'triangle', n.d, n.t));
       }
     };
 
     /* =========================================================
-       2. 完整的 40 題題庫（每區 10 題，嚴格取材自教材 PDF）
+       2. 情境化 40 題題庫（便條/信函/日記式情境）
     ========================================================= */
-    const QUESTION_BANK = {
+    const STORY_QUESTIONS = {
       origin: [
-        {
-          q: "16 世紀末，歌劇誕生於義大利的哪一座城市？",
-          options: ["佛羅倫斯", "羅馬", "威尼斯", "米蘭"],
-          ans: 0,
-          desc: "十六世紀末，歌劇誕生於義大利佛羅倫斯。"
-        },
-        {
-          q: "贊助聚會並以復興古希臘戲劇為宗旨的貴族是？",
-          options: ["阿爾瑪維瓦伯爵", "巴爾第伯爵 (Giovanni de' Bardi)", "美第奇家族", "博馬舍"],
-          ans: 1,
-          desc: "由巴爾第伯爵贊助文人與音樂家，組成同好會。"
-        },
-        {
-          q: "這群志同道合的文人與音樂家所組成的聚會團體被稱為什麼？",
-          options: ["九位女武神", "同好會 (Florentina Camerata)", "藝術家聯盟", "大劇院協會"],
-          ans: 1,
-          desc: "以復興古希臘戲劇為宗旨的「同好會」。"
-        },
-        {
-          q: "目前所知「最早被稱為歌劇」的作品（1597年，現已失傳）是？",
-          options: ["《尤麗狄斯》", "《奧菲歐》", "《達芙尼》(Dafne)", "《魔笛》"],
-          ans: 2,
-          desc: "里努奇尼與佩里創作的《達芙尼》為目前所知最早被稱為歌劇的作品。"
-        },
-        {
-          q: "「現存最古老」的歌劇作品是哪一部？（1600年完成）",
-          options: ["《尤麗狄斯》(Euridice)", "《茶花女》", "《達芙尼》", "《卡門》"],
-          ans: 0,
-          desc: "現存最古老歌劇為里努奇尼與佩里創作的《尤麗狄斯》。"
-        },
-        {
-          q: "1637 年，世界上「第一座公共歌劇院」誕生於哪一座城市？",
-          options: ["佛羅倫斯", "威尼斯（聖卡西亞諾劇院）", "巴黎", "維也納"],
-          ans: 1,
-          desc: "1637 年威尼斯建立了世界上第一座公共歌劇院「聖卡西亞諾劇院」。"
-        },
-        {
-          q: "在提倡歌劇的四個流派中，「趨於保守的道德劇，但講究佈景華麗」的是哪一派？",
-          options: ["佛羅倫斯派", "威尼斯派", "羅馬派", "拿坡里派"],
-          ans: 2,
-          desc: "羅馬派特色為趨於保守的道德劇，講究佈景的華麗。"
-        },
-        {
-          q: "四個流派中「強調音樂地位，常被批評忽略劇情及角色性格」的是哪一派？",
-          options: ["拿坡里派", "佛羅倫斯派", "威尼斯派", "羅馬派"],
-          ans: 0,
-          desc: "拿坡里派過度強調音樂與美聲，常被批評忽略劇情。"
-        },
-        {
-          q: "歌劇特色中，專為表達角色內心情感、旋律優美且讓歌者展現技巧的獨唱歌曲是？",
-          options: ["朗誦調 (Recitative)", "詠唱調 / 詠嘆調 (Aria)", "序曲 (Overture)", "合唱 (Chorus)"],
-          ans: 1,
-          desc: "詠唱調（Aria）負責表達角色深刻的情感與高超技巧。"
-        },
-        {
-          q: "歌劇演進中，18 世紀發起歌劇改革、提倡「音樂必須為戲劇服務」的關鍵作曲家是？",
-          options: ["蒙台威爾第", "葛路克 (Gluck)", "羅西尼", "普契尼"],
-          ans: 1,
-          desc: "葛路克在古典時期發起歌劇改革，主張音樂為戲劇服務。"
-        }
+        { intro: "【羊皮紙日記 · 摘錄】「這座文藝復興名城以阿諾河貫穿，巴爾第伯爵召集了我們……」", q: "請問同好會當初是在義大利的哪座城市萌芽歌劇？", opts: ["佛羅倫斯", "羅馬", "威尼斯", "米蘭"], ans: 0 },
+        { intro: "【褪色的贊助信】「這份贊助款項來自宮廷貴族，他矢志復興古希臘戲劇精神……」", q: "請問出資支持同好會的貴族伯爵是誰？", opts: ["阿爾瑪維瓦伯爵", "巴爾第伯爵 (Giovanni de' Bardi)", "美第奇伯爵", "博馬舍"], ans: 1 },
+        { intro: "【秘密聚會守則】「我們這群學者、詩人與樂師打破界線，追求古希臘雅典戲劇榮光。」", q: "這個在歌劇史上舉足輕重的聚會被稱作？", opts: ["九位仙童會", "同好會 (Florentina Camerata)", "文藝復興沙龍", "阿卡迪亞社"], ans: 1 },
+        { intro: "【殘破的古樂譜封面】「1597年首演，以河神之女被阿波羅追求的神話為題，可惜原譜已佚失。」", q: "這部被公認為『最早被稱為歌劇』的作品是？", opts: ["《尤麗狄斯》", "《奧菲歐》", "《達芙尼》(Dafne)", "《魔笛》"], ans: 2 },
+        { intro: "【古籍典藏清單】「完成於1600年，為現存有完整曲譜留存的最古老歌劇典範。」", q: "這部現存最古老的歌劇名為？", opts: ["《尤麗狄斯》(Euridice)", "《茶花女》", "《達芙尼》", "《波希米亞人》"], ans: 0 },
+        { intro: "【泛黃的威尼斯水道地圖】「1637年，售票制度確立，世界上第一座面向大眾的公共歌劇院在此剪綵。」", q: "這座座落在威尼斯的公共歌劇院名稱是？", opts: ["史卡拉歌劇院", "聖卡西亞諾劇院 (San Cassiano)", "維也納國家劇院", "巴黎歌劇院"], ans: 1 },
+        { intro: "【教廷審查報告】「該派別多演出道德劇，情節雖嚴謹保守，但舞台佈景講究極致華麗。」", q: "此份報告描述的是哪一個早期歌劇流派？", opts: ["佛羅倫斯派", "威尼斯派", "羅馬派", "拿坡里派"], ans: 2 },
+        { intro: "【樂評專欄苛評】「歌手們只顧展現華麗花腔美聲，音樂地位凌駕一切，劇情與性格刻畫蕩然無存！」", q: "這段批評針對的是哪一個過度強調歌唱技巧的流派？", opts: ["拿坡里派", "佛羅倫斯派", "威尼斯派", "古典派"], ans: 0 },
+        { intro: "【總監的演唱筆記】「此段落專為抒發主角狂熱的內心情感而寫，旋律優美且技巧艱難。」", q: "這種類型的獨唱曲在歌劇中稱為？", opts: ["朗誦調 (Recitative)", "詠唱調 / 詠嘆調 (Aria)", "序曲 (Overture)", "合唱 (Chorus)"], ans: 1 },
+        { intro: "【古典主義革新宣言】「我們要破除歌手無意義的炫技，讓音樂重新為戲劇的靈魂服務！」", q: "在 18 世紀引領這場關鍵改革的作曲家是？", opts: ["蒙台威爾第", "葛路克 (Gluck)", "羅西尼", "普契尼"], ans: 1 }
       ],
       mozart: [
-        {
-          q: "莫札特將 18 世紀的哪一種歌劇類型發展至顛峰？",
-          options: ["喜歌劇", "法國大歌劇", "樂劇", "神劇"],
-          ans: 0,
-          desc: "莫札特將 18 世紀的喜歌劇發展至巔峰。"
-        },
-        {
-          q: "莫札特著名歌劇中，哪一部是以「德語」創作的歌唱劇？",
-          options: ["《費加洛婚禮》", "《唐·喬望尼》", "《魔笛》(Die Zauberflöte)", "《茶花女》"],
-          ans: 2,
-          desc: "《魔笛》為德語歌劇，而《費加洛婚禮》與《唐·喬望尼》為義大利語歌劇。"
-        },
-        {
-          q: "《費加洛婚禮》四幕喜歌劇的義大利語腳本改編者是？",
-          options: ["小仲馬", "洛倫佐·達·彭特 (Lorenzo Da Ponte)", "卡洛·戈齊", "里努奇尼"],
-          ans: 1,
-          desc: "腳本由達·彭特改編自法國劇作家博馬舍的同名喜劇。"
-        },
-        {
-          q: "在《費加洛婚禮》中，多愁善感的年輕男僕「凱魯比諾」通常由哪種聲部女性反串？",
-          options: ["次女高音 (Mezzo-Soprano)", "女低音", "花腔女高音", "假聲男高音"],
-          ans: 0,
-          desc: "凱魯比諾由次女高音反串演出。"
-        },
-        {
-          q: "【聆賞題】點擊播放按鈕，聽辨這首飛快躍動的管弦樂開場是莫札特哪首名曲？",
-          audioFunc: "playFigaroOverture",
-          options: ["《魔笛》序曲", "《費加洛婚禮》序曲", "《唐·喬望尼》序曲", "《小夜曲》"],
-          ans: 1,
-          desc: "此為《費加洛婚禮》著名序曲的輕快主題！"
-        },
-        {
-          q: "《費加洛婚禮》第二幕中，凱魯比諾唱出青春期初嘗愛情滋味的抒情調是？",
-          options: ["〈情為何物〉(Voi Che Sapete)", "〈如果你想跳舞〉", "〈微風吹拂的時光〉", "〈愛神請賜我寬恕〉"],
-          ans: 0,
-          desc: "〈情為何物〉描繪初嘗愛情滋味的悸動與迷惘。"
-        },
-        {
-          q: "《費加洛婚禮》第四幕中，伯爵夫人口述、蘇珊娜代筆誘捕伯爵的著名二重唱是？",
-          options: ["〈如果夫人想找你〉", "〈微風吹拂的時光〉(Sull'aria)", "〈飲酒歌〉", "〈帕帕基諾!帕帕基娜!〉"],
-          ans: 1,
-          desc: "〈微風吹拂的時光〉是該劇最著名的信件二重唱。"
-        },
-        {
-          q: "《魔笛》主要角色中，天真樂觀、身穿羽毛服裝的捕鳥人「帕帕基諾」的聲種是？",
-          options: ["男高音", "男中音", "男低音", "假聲男高音"],
-          ans: 1,
-          desc: "帕帕基諾是男中音，而塔米諾王子是男高音。"
-        },
-        {
-          q: "《魔笛》第二幕中，夜后交給女兒匕首、唱出極高超花腔與高音 F6 的詠嘆調是？",
-          options: ["〈地獄的復仇之火在心中燃燒〉", "〈我是個快樂的捕鳥人〉", "〈這幅畫像迷人美豔〉", "〈情為何物〉"],
-          ans: 0,
-          desc: "夜后以高亢花腔唱出〈地獄的復仇之火在心中燃燒〉。"
-        },
-        {
-          q: "《魔笛》全劇尾聲前，帕帕基諾與尋獲的夢中情人重逢、俏皮計畫未來的二重唱是？",
-          options: ["〈飲酒歌〉", "〈帕帕基諾!帕帕基娜!〉(Pa-pa-pa-)", "〈離去巴黎〉", "〈如果夫人想找你〉"],
-          ans: 1,
-          desc: "兩人相認並唱出俏皮歡樂的〈Pa-pa-pa-〉二重唱。"
-        }
+        { intro: "【莫札特書信集】「維也納觀眾熱愛幽默、機智且節奏輕快的諷刺喜劇。」", q: "莫札特將 18 世紀哪一種歌劇形式推向了藝術巔峰？", opts: ["喜歌劇", "法國大歌劇", "德國樂劇", "神劇"], ans: 0 },
+        { intro: "【德語手稿清單】「雖然許多名作以義大利語演出，但這部童話般的神話劇堅持使用德語唱詞。」", q: "這部由莫札特親自指揮首演的德語歌劇是？", opts: ["《費加洛婚禮》", "《唐·喬望尼》", "《魔笛》(Die Zauberflöte)", "《女人皆如此》"], ans: 2 },
+        { intro: "【皇家劇院特許令】「腳本改編自法國作家博馬舍名劇，描寫僕人智勝傲慢貴族的故事。」", q: "為莫札特改編《費加洛婚禮》義大利語腳本的文人是？", opts: ["小仲馬", "洛倫佐·達·彭特 (Lorenzo Da Ponte)", "卡洛·戈齊", "里努奇尼"], ans: 1 },
+        { intro: "【角色服裝設計圖】「年輕男僕凱魯比諾情竇初開，舞台上依傳統由女性歌者跨性別反串。」", q: "這位反串演員通常由哪種聲部演唱？", opts: ["次女高音 (Mezzo-Soprano)", "女低音", "花腔女高音", "男高音"], ans: 0 },
+        { intro: "【八音盒試聽】點擊播放鈕，辨識化妝鏡台傳來的飛快旋律動機：", audio: "playFigaro", q: "請問這段活潑急促的開場音樂出自哪部作品？", opts: ["《魔笛》序曲", "《費加洛婚禮》序曲", "《唐·喬望尼》序曲", "《小夜曲》"], ans: 1 },
+        { intro: "【僕人的告白手抄本】「我不懂為何胸口如此燥熱？請告訴我，這就是愛情嗎？」", q: "這首由凱魯比諾唱出的青春迷惘名曲是？", opts: ["〈情為何物〉(Voi Che Sapete)", "〈如果你想跳舞〉", "〈微風吹拂的時光〉", "〈愛神請賜我寬恕〉"], ans: 0 },
+        { intro: "【梳妝台上的密函】「夫人念一句、女僕寫一句，她們要藉著松樹林的花園幽會誘捕花心伯爵。」", q: "這首著名的第四幕信件二重唱名為？", opts: ["〈如果夫人想找你〉", "〈微風吹拂的時光〉(Sull'aria)", "〈飲酒歌〉", "〈離去巴黎〉"], ans: 1 },
+        { intro: "【捕鳥人行囊】「背著竹籠、吹著排笛，帕帕基諾整天渴望找到心愛的姑娘。」", q: "天真開朗的帕帕基諾在劇中的歌唱聲部是？", opts: ["男高音", "男中音", "男低音", "假聲男高音"], ans: 1 },
+        { intro: "【沾有毒液的匕首】「夜后命令女兒帕蜜娜去行刺大祭司薩拉斯托，並飆出驚人的超高音 F6！」", q: "這首震撼全場的憤怒詠嘆調是？", opts: ["〈地獄的復仇之火在心中燃燒〉", "〈我是個快樂的捕鳥人〉", "〈這幅畫像迷人美豔〉", "〈愛神請賜我寬恕〉"], ans: 0 },
+        { intro: "【鳥巢裝飾】「歷經試煉後，捕鳥人與情人相認，兩人興奮重複著彼此名字的開頭音節。」", q: "這首歡樂甜蜜的壓軸二重唱是？", opts: ["〈飲酒歌〉", "〈帕帕基諾!帕帕基娜!〉(Pa-pa-pa-)", "〈離去巴黎〉", "〈你那冰冷的小手〉"], ans: 1 }
       ],
       verdi_wagner: [
-        {
-          q: "威爾第的三幕歌劇《茶花女》(La traviata)，改編自哪位作家的同名小說？",
-          options: ["大仲馬", "小仲馬", "雨果", "穆傑"],
-          ans: 1,
-          desc: "改編自法國作家小仲馬於 1848 年出版的同名小說。"
-        },
-        {
-          q: "歌劇《茶花女》劇名「La traviata」的字面原意是？",
-          options: ["美麗的茶花", "迷途的羔羊 / 墮落的女人", "永恆的真愛", "巴黎的宴會"],
-          ans: 1,
-          desc: "La traviata 的字面原意為「迷途的羔羊」或走上歧途的人。"
-        },
-        {
-          q: "在威爾第改編的《茶花女》中，女主角交際花的名字被設定為？",
-          options: ["瑪格麗特", "薇奧莉塔 (Violetta Valéry)", "咪咪", "蘇珊娜"],
-          ans: 1,
-          desc: "威爾第將女主角名字替換為 Violetta Valéry。"
-        },
-        {
-          q: "【聆賞題】點擊播放按鈕，聽辨這首出現在第一幕宴會中的經典三拍子二重唱：",
-          audioFunc: "playDrinkingSong",
-          options: ["〈飲酒歌〉(Libiamo ne' lieti calici)", "〈永遠自由〉", "〈求你寬恕那純潔的少女〉", "〈離去巴黎〉"],
-          ans: 0,
-          desc: "此為第一幕宴會中男女主角一見鍾情的〈飲酒歌〉。"
-        },
-        {
-          q: "《茶花女》第一幕尾聲，薇奧莉塔內心掙扎後決定拋開真愛束縛、縱情享樂的名曲是？",
-          options: ["〈永遠自由〉(Sempre libera)", "〈啊，從此我便能看見他〉", "〈你那冰冷的小手〉", "〈情為何物〉"],
-          ans: 0,
-          desc: "薇奧莉塔以炫技花腔唱出〈永遠自由〉。"
-        },
-        {
-          q: "華格納將音樂、戲劇、詩歌與舞台佈景完美統一的藝術理念稱為什麼？",
-          options: ["美聲歌劇", "總體藝術 (Gesamtkunstwerk) / 樂劇", "寫實主義", "歌唱劇"],
-          ans: 1,
-          desc: "華格納打破界線，提倡「樂劇」與「總體藝術」。"
-        },
-        {
-          q: "華格納耗時 26 年完成、取材自北歐神話的四部曲代表巨作是？",
-          options: ["《羅恩格林》", "《尼貝龍根的指環》(Der Ring des Nibelungen)", "《奧菲歐》", "《唐懷瑟》"],
-          ans: 1,
-          desc: "由序夜與三部正劇組成，演出長達 15~17 小時。"
-        },
-        {
-          q: "【聆賞題】點擊播放按鈕，聽辨這段氣勢磅礡、銅管密集的動機出自華格納哪首名曲？",
-          audioFunc: "playValkyrieMotif",
-          options: ["《婚禮進行曲》", "《女武神的飛行》(Ride of the Valkyries)", "《萊茵的黃金》序奏", "《諸神的黃昏》"],
-          ans: 1,
-          desc: "《女武神》第三幕開頭描繪女武神穿梭雷雨雲端的震撼名曲！"
-        },
-        {
-          q: "華格納在《女武神》中，用貫穿全劇、代表特定人物或情境的招牌作曲技法稱為？",
-          options: ["主導動機 (Leitmotif)", "宣敘調", "反串演唱", "數字低音"],
-          ans: 0,
-          desc: "華格納運用「主導動機」技法將特定音樂主題與角色/意象綁定。"
-        },
-        {
-          q: "《女武神的飛行》描繪了眾神之王沃坦的「幾位女武神」騎飛馬護送英靈？",
-          options: ["3 位", "7 位", "9 位", "12 位"],
-          ans: 2,
-          desc: "九位女武神騎著飛馬穿梭雲端，將戰死沙場的英雄送回英靈殿。"
-        }
+        { intro: "【巴黎舊書攤小說】「這本小說於1848年出版，講述茶花交際花為了摯愛犧牲名譽的悲劇。」", q: "這部啟發威爾第創作出《茶花女》的原著小說作者是？", opts: ["大仲馬", "小仲馬", "雨果", "巴爾扎克"], ans: 1 },
+        { intro: "【劇作字源辭典】「威爾第為歌劇定名為《La traviata》，在義大利語中有著深刻隱喻。」", q: "請問其字面原意是？", opts: ["美麗的茶花", "迷途的羔羊 / 墮落的女人", "永恆的誓言", "巴黎的社交界"], ans: 1 },
+        { intro: "【宴會邀請函】「威爾第將女主角名字替換，她身患肺結核卻在巴黎盛宴中強顏歡笑。」", q: "歌劇《茶花女》的女主角名字是？", opts: ["瑪格麗特", "薇奧莉塔 (Violetta Valéry)", "咪咪", "托斯卡"], ans: 1 },
+        { intro: "【香檳酒杯聆聽】點擊播放鈕，聆聽第一幕宴會中眾人舉杯相慶的三拍子旋律：", audio: "playDrinkingSong", q: "這首膾炙人口的宴會二重唱是？", opts: ["〈飲酒歌〉(Libiamo ne' lieti calici)", "〈永遠自由〉", "〈求你寬恕那純潔的少女〉", "〈女武神的飛行〉"], ans: 0 },
+        { intro: "【華麗禮服碎布】「客人散去後，薇奧莉塔在空蕩客廳唱出縱情歡樂、拋開愛情的獨白。」", q: "這首展現高難度花腔技巧的獨唱名曲是？", opts: ["〈永遠自由〉(Sempre libera)", "〈啊，從此我便能看見他〉", "〈離去巴黎〉", "〈微風吹拂的時光〉"], ans: 0 },
+        { intro: "【拜魯特劇院藍圖】「音樂、詩歌、戲劇與視覺必須無縫融合，打破傳統分曲界線。」", q: "華格納所提倡將所有藝術統整的至高理念被稱為？", opts: ["美聲主義", "總體藝術 (Gesamtkunstwerk) / 樂劇", "古典喜劇", "寫實歌劇"], ans: 1 },
+        { intro: "【北歐神話全集】「由序夜與三部正劇組成，演出長達 15 到 17 小時的宏偉連作。」", q: "華格納耗時 26 年完成的巨作是？", opts: ["《羅恩格林》", "《尼貝龍根的指環》(Der Ring des Nibelungen)", "《唐懷瑟》", "《飄泊的荷蘭人》"], ans: 1 },
+        { intro: "【戰盔與飛馬印記】點擊播放鈕，聆聽這段描繪狂風暴雨中神祇奔馳的磅礡動機：", audio: "playValkyrie", q: "這首出現在第二部《女武神》第三幕開頭的名曲是？", opts: ["《婚禮進行曲》", "《女武神的飛行》(Ride of the Valkyries)", "《諸神的黃昏》序曲", "《萊茵的黃金》開場"], ans: 1 },
+        { intro: "【總譜結構分析】「每當魔戒、聖劍或特定英雄登場，樂隊便奏出專屬的音樂印記。」", q: "華格納用來貫穿全劇、標示特定人事物的招牌作曲手法稱為？", opts: ["主導動機 (Leitmotif)", "宣敘調", "反串演唱", "花腔裝飾"], ans: 0 },
+        { intro: "【英靈殿登錄冊】「眾神之王沃坦的女兒們騎著飛馬，將戰死沙場的勇士英靈護送回殿堂。」", q: "在《女武神的飛行》中，共有幾位女武神在雲端呼喊口號？", opts: ["3 位", "7 位", "9 位", "12 位"], ans: 2 }
       ],
       puccini: [
-        {
-          q: "19 世紀末以普契尼等人為代表，描繪市井小民真實生活的歌劇流派是？",
-          options: ["寫實主義 (Verismo)", "古典主義", "巴洛克時期", "總體藝術"],
-          ans: 0,
-          desc: "寫實主義歌劇描繪市井小民的真實生活與悲歡離合。"
-        },
-        {
-          q: "浦契尼歌劇《波希米亞人》(La Bohème) 又被翻譯為什麼？",
-          options: ["《藝術家的生涯》", "《巴黎的狂歡》", "《迷途羔羊》", "《吉普賽人之歌》"],
-          ans: 0,
-          desc: "《波希米亞人》又譯《藝術家的生涯》。"
-        },
-        {
-          q: "《波希米亞人》故事背景發生在哪一座城市的拉丁區閣樓？",
-          options: ["維也納", "羅馬", "巴黎", "佛羅倫斯"],
-          ans: 2,
-          desc: "描繪 19 世紀巴黎拉丁區一群貧窮卻熱愛藝術的年輕人。"
-        },
-        {
-          q: "在《波希米亞人》第一幕中，魯道夫在黑暗中牽起咪咪的手所唱的著名男高音詠嘆調是？",
-          options: ["〈你那冰冷的小手〉(Che gelida manina)", "〈人們都叫我咪咪〉", "〈公主徹夜未眠〉", "〈飲酒歌〉"],
-          ans: 0,
-          desc: "魯道夫唱出深情浪漫的〈你那冰冷的小手〉。"
-        },
-        {
-          q: "緊接在魯道夫之後，體弱多病的繡花女咪咪向他介紹自己生活的詠嘆調是？",
-          options: ["〈人們都叫我咪咪〉(Sì, mi chiamano Mimì)", "〈晴朗的一天〉", "〈為藝術，為愛情〉", "〈永遠自由〉"],
-          ans: 0,
-          desc: "咪咪隨後唱出純樸動人的〈人們都叫我咪咪〉。"
-        },
-        {
-          q: "歌劇《杜蘭朵公主》劇本改編自哪位義大利劇作家的作品？",
-          options: ["卡洛·戈齊 (Carlo Gozzi)", "小仲馬", "博馬舍", "莎士比亞"],
-          ans: 0,
-          desc: "改編自卡洛·戈齊的作品，融入波斯童話與中國傳說。"
-        },
-        {
-          q: "浦契尼在《杜蘭朵公主》中，巧妙採用了哪一首中國江蘇民謠貫穿全劇？",
-          options: ["《鳳陽花鼓》", "《康定情歌》", "《茉莉花》", "《紫竹調》"],
-          ans: 2,
-          desc: "劇中採用中國江蘇民謠《茉莉花》旋律象徵公主與東方色彩。"
-        },
-        {
-          q: "因浦契尼逝世，最後根據其草稿於 1924 年將《杜蘭朵公主》全劇續寫完成的作曲家是？",
-          options: ["阿爾法諾 (Franco Alfano)", "托斯卡尼尼", "威爾第", "羅西尼"],
-          ans: 0,
-          desc: "由阿爾法諾根據普契尼的草稿將全劇完成。"
-        },
-        {
-          q: "杜蘭朵公主設下三道謎題招親，卡拉富王子依序猜出的三個正確謎底是？",
-          options: ["希望、熱情、杜蘭朵", "月光、鮮血、復仇", "真愛、春天、勇氣", "智慧、權力、自由"],
-          ans: 0,
-          desc: "謎題一答案為「希望」，謎題二為「熱情」，謎題三為「杜蘭朵」。"
-        },
-        {
-          q: "【聆賞題】點擊播放，聽辨這首卡拉富王子表達贏得芳心絕對自信的著名男高音詠嘆調：",
-          audioFunc: "playNessunDorma",
-          options: ["〈你那冰冷的小手〉", "〈公主徹夜未眠〉(Nessun dorma)", "〈善變的女人〉", "〈星光燦爛〉"],
-          ans: 1,
-          desc: "此為歌劇史上最著名的男高音詠嘆調〈公主徹夜未眠〉！"
-        }
+        { intro: "【寫實主義宣言】「不再描寫神祇與宮廷貴族，我們將鏡頭對準市井小民的生活與真實悲歡。」", q: "19 世紀末以浦契尼等人為首的文藝思潮稱為？", opts: ["寫實主義 (Verismo)", "浪漫主義", "古典主義", "巴洛克同好會"], ans: 0 },
+        { intro: "【閣樓租賃合約】「四位身無分文卻滿懷理想的年輕藝術家，在寒冬平安夜聚集在此。」", q: "浦契尼名劇《波希米亞人》(La Bohème) 又常被翻譯為？", opts: ["《藝術家的生涯》", "《巴黎的狂歡》", "《迷途的羔羊》", "《吉普賽人之歌》"], ans: 0 },
+        { intro: "【地標明信片】「這群貧窮藝術家與哲學家聚集在塞納河左岸的文人區。」", q: "《波希米亞人》的閣樓生活發生在哪座城市的拉丁區？", opts: ["維也納", "羅馬", "巴黎", "佛羅倫斯"], ans: 2 },
+        { intro: "【熄滅的燭火】「黑暗中兩人摸索著鑰匙，詩人握住了女孩冰涼的纖手。」", q: "魯道夫在此時唱出的經典深情男高音詠嘆調是？", opts: ["〈你那冰冷的小手〉(Che gelida manina)", "〈人們都叫我咪咪〉", "〈公主徹夜未眠〉", "〈飲酒歌〉"], ans: 0 },
+        { intro: "【繡花針與絲線】「女孩害羞地向詩人道出自己以刺繡百合與玫瑰為生的孤寂日常。」", q: "咪咪緊接著回應的著名詠嘆調名為？", opts: ["〈人們都叫我咪咪〉(Sì, mi chiamano Mimì)", "〈晴朗的一天〉", "〈為藝術，為愛情〉", "〈永遠自由〉"], ans: 0 },
+        { intro: "【戈齊童話劇本】「改編自威尼斯劇作家戈齊之作，將傳說搬到了古老的北京紫禁城。」", q: "這部充滿神秘東方色彩的浦契尼遺作是？", opts: ["《杜蘭朵公主》(Turandot)", "《托斯卡》", "《蝴蝶夫人》", "《波希米亞人》"], ans: 0 },
+        { intro: "【東方五聲音階樂譜】「浦契尼巧妙借用了一首中國民間小調，象徵純潔又冷酷的東方公主。」", q: "這首貫穿全劇的中國江蘇民謠是？", opts: ["《鳳陽花鼓》", "《康定情歌》", "《茉莉花》", "《紫竹調》"], ans: 2 },
+        { intro: "【米蘭首演手記】「因作曲大師罹癌逝世，最後由後輩依據大師生前草稿將第三幕完工。」", q: "續寫完成《杜蘭朵公主》全劇的作曲家是？", opts: ["阿爾法諾 (Franco Alfano)", "托斯卡尼尼", "威爾第", "羅西尼"], ans: 0 },
+        { intro: "【城門公告告示】「答對公主三道謎題者可迎娶為妻，答錯者立刻推上斷頭台！」", q: "卡拉富王子依序猜出的三個謎底分別是？", opts: ["希望、熱情、杜蘭朵", "月光、鮮血、復仇", "真愛、春天、勇氣", "智慧、權力、自由"], ans: 0 },
+        { intro: "【夜深人靜的詠嘆】點擊播放鈕，聆聽卡拉富王子堅信黎明將迎來勝利的動機：", audio: "playNessunDorma", q: "這首無人不知的世紀男高音詠嘆調是？", opts: ["〈你那冰冷的小手〉", "〈公主徹夜未眠〉(Nessun dorma)", "〈善變的女人〉", "〈星光燦爛〉"], ans: 1 }
       ]
     };
 
-    /* 展區通關密碼（1697 年歌劇黃金期） */
-    const ZONE_CODES = {
-      origin: '1',
-      mozart: '6',
-      verdi_wagner: '9',
-      puccini: '7'
+    const ARTIFACT_NAMES = {
+      origin: { name: "📜 古希臘桂冠", code: "1" },
+      mozart: { name: "🪞 委任狀金章", code: "6" },
+      verdi_wagner: { name: "🛡️ 女武神銀羽", code: "9" },
+      puccini: { name: "🏮 東方玉珮", code: "7" }
     };
 
-    /* 遊戲當前進度狀態 */
-    const userState = {
-      origin: { currentIdx: 0, completed: false },
-      mozart: { currentIdx: 0, completed: false },
-      verdi_wagner: { currentIdx: 0, completed: false },
-      puccini: { currentIdx: 0, completed: false }
+    const progress = {
+      origin: { idx: 0, done: false },
+      mozart: { idx: 0, done: false },
+      verdi_wagner: { idx: 0, done: false },
+      puccini: { idx: 0, done: false }
     };
+
+    /* 計時器邏輯（15分鐘倒數） */
+    let timeLeft = 900;
+    setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+        const s = String(timeLeft % 60).padStart(2, '0');
+        document.getElementById('countdown-timer').textContent = `${m}:${s}`;
+      }
+    }, 1000);
 
     /* =========================================================
-       3. 畫面更新與渲染（style.display 優先控制）
+       3. 畫面開啟與題目渲染（style.display 優先）
     ========================================================= */
-    function openModal(zoneKey) {
+    function openZone(zone) {
       Sound.init();
       const modal = document.getElementById('modal-container');
       const box = document.getElementById('modal-content');
-      const state = userState[zoneKey];
-      const questions = QUESTION_BANK[zoneKey];
+      const st = progress[zone];
+      const qList = STORY_QUESTIONS[zone];
 
-      if (state.completed) {
+      if (st.done) {
         box.innerHTML = `
-          <div class="text-center p-4">
-            <div class="text-4xl mb-2">🎉</div>
-            <h3 class="text-lg font-bold text-amber-300 mb-2">本展區 10 題已全數通關！</h3>
-            <p class="text-xs text-stone-300 mb-4">你已成功掌握本展區所有的核心音樂與歌劇史知識！</p>
-            <div class="bg-stone-950 p-4 rounded-xl border border-amber-500/40 mb-5">
-              <span class="text-xs text-stone-400 block mb-1">展區獲取密碼</span>
-              <span class="text-3xl font-mono font-bold text-amber-300">【 ${ZONE_CODES[zoneKey]} 】</span>
+          <div class="text-center p-3">
+            <div class="text-4xl mb-2">✨</div>
+            <h3 class="text-base font-bold text-amber-300 mb-2">此處搜查已完成！</h3>
+            <p class="text-xs text-stone-300 mb-4">你已獲得關鍵信物：<strong class="text-amber-200">${ARTIFACT_NAMES[zone].name}</strong></p>
+            <div class="bg-stone-900 p-3 rounded-xl border border-amber-600/50 mb-4 inline-block px-6">
+              <span class="text-xs text-stone-400 block">信物銘刻密碼</span>
+              <span class="text-2xl font-mono font-bold text-amber-300">【 ${ARTIFACT_NAMES[zone].code} 】</span>
             </div>
-            <button onclick="closeModal()" class="w-full bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold py-2.5 rounded-xl text-xs">返回後台儀表板</button>
+            <div>
+              <button onclick="closeModal()" class="w-full bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold py-2 rounded text-xs">返回後台搜查</button>
+            </div>
           </div>
         `;
         modal.style.display = 'flex';
         return;
       }
 
-      const qObj = questions[state.currentIdx];
+      const curQ = qList[st.idx];
 
       box.innerHTML = `
-        <div class="flex justify-between items-center mb-3">
-          <span class="text-xs font-mono text-amber-400 font-bold">進度：第 ${state.currentIdx + 1} / 10 題</span>
-          <span class="text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded">通關後給予密碼</span>
+        <div class="flex justify-between items-center border-b border-amber-900/40 pb-2 mb-3">
+          <span class="text-xs font-mono text-amber-400 font-bold">🔍 線索搜查：第 ${st.idx + 1} / 10 步</span>
+          <span class="text-[11px] text-stone-400">距離獲得信物還有 ${10 - st.idx} 題</span>
         </div>
 
-        <div class="w-full bg-stone-800 h-1.5 rounded-full mb-4 overflow-hidden">
-          <div class="bg-amber-500 h-full transition-all duration-300" style="width: ${((state.currentIdx + 1) / 10) * 100}%"></div>
+        <div class="bg-black/30 border-l-2 border-amber-500 p-2.5 rounded mb-3 text-xs text-amber-100/90 leading-relaxed italic font-serif">
+          ${curQ.intro}
         </div>
 
-        <h3 class="text-sm md:text-base font-bold text-stone-100 mb-3 leading-relaxed">
-          ${qObj.q}
+        <h3 class="text-xs md:text-sm font-bold text-stone-100 mb-3 leading-relaxed">
+          ${curQ.q}
         </h3>
 
-        ${qObj.audioFunc ? `
-          <div class="bg-stone-950 p-3.5 rounded-xl border border-stone-800 text-center mb-4">
-            <button onclick="Sound.${qObj.audioFunc}()" class="bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold px-4 py-2 rounded-lg text-xs flex items-center gap-2 mx-auto shadow transition active:scale-95">
-              <span>▶️ 點擊播放音訊動機</span>
+        ${curQ.audio ? `
+          <div class="bg-stone-950/80 p-3 rounded-xl border border-amber-900/60 text-center mb-3">
+            <button onclick="Sound.${curQ.audio}()" class="bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold px-3 py-1.5 rounded-lg text-xs inline-flex items-center gap-1.5 shadow active:scale-95">
+              <span>▶️ 點擊播放現場音訊</span>
             </button>
-            <span class="text-[11px] text-stone-400 block mt-1.5">（請開啟裝置音量聆聽旋律）</span>
+            <span class="text-[10px] text-stone-400 block mt-1">（請仔細聆聽旋律與配器特徵）</span>
           </div>
         ` : ''}
 
-        <div class="space-y-2 mb-4">
-          ${qObj.options.map((opt, i) => `
-            <button onclick="submitAnswer('${zoneKey}', ${i})"
-                    class="w-full text-left p-3 rounded-xl bg-stone-800 hover:bg-stone-700 active:bg-amber-900/40 text-stone-200 text-xs md:text-sm border border-stone-700/80 transition">
-              <span class="font-bold text-amber-400 mr-1.5">${String.fromCharCode(65 + i)}.</span> ${opt}
+        <div class="space-y-2 mb-3">
+          ${curQ.opts.map((opt, i) => `
+            <button onclick="chooseAnswer('${zone}', ${i})"
+                    class="w-full text-left p-2.5 rounded-xl bg-stone-900/80 hover:bg-amber-950/50 text-stone-200 text-xs border border-amber-900/30 transition">
+              <span class="font-bold text-amber-400 mr-1">${String.fromCharCode(65 + i)}.</span> ${opt}
             </button>
           `).join('')}
         </div>
 
-        <div id="modal-feedback" class="text-xs text-center min-h-[1.25rem]"></div>
+        <div id="zone-feedback" class="text-xs text-center min-h-[1rem]"></div>
       `;
 
       modal.style.display = 'flex';
@@ -578,79 +355,77 @@
     }
 
     /* =========================================================
-       4. 答題判定與狀態推進
+       4. 判定與道具獲得
     ========================================================= */
-    function submitAnswer(zoneKey, selectedIdx) {
-      const state = userState[zoneKey];
-      const qObj = QUESTION_BANK[zoneKey][state.currentIdx];
-      const fb = document.getElementById('modal-feedback');
+    function chooseAnswer(zone, selected) {
+      const st = progress[zone];
+      const curQ = STORY_QUESTIONS[zone][st.idx];
+      const fb = document.getElementById('zone-feedback');
 
-      if (selectedIdx === qObj.ans) {
+      if (selected === curQ.ans) {
         Sound.success();
-        fb.innerHTML = `<span class="text-green-400 font-bold">✅ 答對了！${qObj.desc}</span>`;
-        state.currentIdx++;
+        fb.innerHTML = `<span class="text-green-400 font-bold">✅ 判斷正確！線索浮現……</span>`;
+        st.idx++;
 
-        if (state.currentIdx >= 10) {
-          state.completed = true;
-          updateDashboardBadge(zoneKey);
-          checkOverallProgress();
-          setTimeout(() => openModal(zoneKey), 600);
+        if (st.idx >= 10) {
+          st.done = true;
+          // 解開此區道具
+          document.getElementById(`label-${zone}`).textContent = `✅ 已搜出信物 (${ARTIFACT_NAMES[zone].code})`;
+          document.getElementById(`label-${zone}`).className = 'text-[10px] text-green-400 mt-1 font-bold';
+          
+          const slot = document.getElementById(`slot-${zone}`);
+          slot.textContent = `${ARTIFACT_NAMES[zone].name} [${ARTIFACT_NAMES[zone].code}]`;
+          slot.className = 'px-2.5 py-1 bg-amber-950/80 border border-amber-600 rounded text-xs text-amber-300 font-mono font-bold';
+          
+          checkDirectorBroadcast();
+          setTimeout(() => openZone(zone), 500);
         } else {
-          updateDashboardBadge(zoneKey);
-          setTimeout(() => openModal(zoneKey), 450);
+          document.getElementById(`label-${zone}`).textContent = `進度 ${st.idx}/10`;
+          setTimeout(() => openZone(zone), 400);
         }
       } else {
         Sound.error();
-        fb.innerHTML = `<span class="text-red-400 font-bold">❌ 答案不正確，請再思考看看！</span>`;
+        fb.innerHTML = `<span class="text-red-400 font-bold">❌ 判斷失誤，道具未產生反應！</span>`;
       }
     }
 
-    function updateDashboardBadge(zoneKey) {
-      const state = userState[zoneKey];
-      const badge = document.getElementById(`badge-${zoneKey}`);
-      const status = document.getElementById(`status-${zoneKey}`);
-
-      if (state.completed) {
-        badge.textContent = `✅ 通關 (${ZONE_CODES[zoneKey]})`;
-        badge.className = 'text-[11px] bg-amber-900/60 text-amber-300 px-2 py-0.5 rounded border border-amber-600/40 font-mono';
-        status.innerHTML = `密碼：<strong class="text-amber-300 text-sm">${ZONE_CODES[zoneKey]}</strong>`;
-      } else {
-        badge.textContent = `${state.currentIdx} / 10 題`;
-      }
-    }
-
-    function checkOverallProgress() {
+    function checkDirectorBroadcast() {
       let count = 0;
-      ['origin', 'mozart', 'verdi_wagner', 'puccini'].forEach(k => {
-        if (userState[k].completed) count++;
+      ['origin', 'mozart', 'verdi_wagner', 'puccini'].forEach(z => {
+        if (progress[z].done) count++;
       });
-      document.getElementById('progress-badge').textContent = `全劇解謎：${count} / 4 展區`;
+      const broadcast = document.getElementById('director-msg');
+      if (count === 1) broadcast.textContent = "劇院廣播：第一道機關鬆動了！演員已著裝完畢，請加速！";
+      if (count === 2) broadcast.textContent = "劇院廣播：側台指示燈已亮起一半，樂池已進入最後排練！";
+      if (count === 3) broadcast.textContent = "劇院廣播：只差最後一處信物！總監已抵達指揮台！";
+      if (count === 4) broadcast.textContent = "劇院廣播：四樣信物已全部現世！立刻前往鐵門輸入密碼！";
     }
 
-    function verifyFinalEscape() {
+    function escapeStage() {
       const code = document.getElementById('final-code').value.trim();
-      // 正確 4 位密碼組合：1697
+      // 正確密碼：1697
       if (code === '1697') {
         Sound.success();
-        alert('🎉【恭喜大獲全勝！】40 道歌劇考驗全數破解！密碼 1697 正確！舞台大幕升起，全場歡聲雷動！');
+        alert('🎉【首演大獲成功！】\n鐵門轉輪發出巨大轟鳴並開啟！交響樂團前奏響起，大幕在歡呼聲中拉開！\n你拯救了今晚的歌劇首演！');
       } else {
         Sound.error();
-        alert('❌ 密碼不正確！請完成四個展區共 40 題，並依照展區順序輸入 4 位密碼（正確為 1697）。');
+        alert('❌ 鐵門紋絲不動！請確認四件信物是否皆已收集，並按順序填入銘刻的 4 碼數字（1697）。');
       }
     }
 
     function resetGame() {
-      ['origin', 'mozart', 'verdi_wagner', 'puccini'].forEach(k => {
-        userState[k].currentIdx = 0;
-        userState[k].completed = false;
-        const badge = document.getElementById(`badge-${k}`);
-        badge.textContent = `0 / 10 題`;
-        badge.className = 'text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded font-mono';
-        document.getElementById(`status-${k}`).textContent = '點擊開始答題';
+      ['origin', 'mozart', 'verdi_wagner', 'puccini'].forEach(z => {
+        progress[z].idx = 0;
+        progress[z].done = false;
+        document.getElementById(`label-${z}`).textContent = '未檢視';
+        document.getElementById(`label-${z}`).className = 'text-[10px] text-stone-400 mt-1';
+        const slot = document.getElementById(`slot-${z}`);
+        slot.textContent = '［空］';
+        slot.className = 'px-2.5 py-1 bg-stone-950 border border-stone-700 rounded text-xs text-stone-500 font-mono';
       });
-
       document.getElementById('final-code').value = '';
-      checkOverallProgress();
+      document.getElementById('director-msg').textContent = '劇院廣播：大門已被誤鎖，請在管弦樂團序曲結束前解開四處機關！';
+      timeLeft = 900;
       closeModal();
     }
   </script>
