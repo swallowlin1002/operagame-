@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第6課 歌劇停看聽 · 歌劇院密室逃脫</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    .gold-title {
+      background: linear-gradient(135deg, #fde68a 0%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .card-transition {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .card-transition:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-stone-950 text-stone-100 min-h-screen flex flex-col font-sans select-none antialiased">
+
+  <!-- 頂部劇院抬頭欄 -->
+  <header class="bg-gradient-to-r from-red-950 via-stone-900 to-red-950 border-b border-amber-800/40 px-6 py-4 flex items-center justify-between shadow-lg">
+    <div class="flex items-center space-x-3">
+      <span class="text-3xl">🎭</span>
+      <div>
+        <h1 class="text-xl md:text-2xl font-bold tracking-wide gold-title">歌劇停看聽 · 劇院大逃脫</h1>
+        <p class="text-xs text-amber-200/70 hidden sm:block">依據第6課教材：探尋文藝復興起源到浪漫主義大師之謎</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-3">
+      <span id="progress-badge" class="text-xs md:text-sm bg-red-900/60 border border-amber-600/50 px-3 py-1.5 rounded-full text-amber-200 font-mono">
+        進度：0 / 4 線索
+      </span>
+      <button onclick="resetGame()" class="text-xs bg-stone-800 hover:bg-stone-700 border border-stone-600 px-3 py-1.5 rounded text-stone-300 transition">
+        重新開始
+      </button>
+    </div>
+  </header>
+
+  <!-- 主要探索區 -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
+
+    <!-- 任務簡介區塊 -->
+    <div class="bg-stone-900/90 border border-amber-900/50 rounded-2xl p-5 shadow-xl">
+      <h2 class="text-base md:text-lg font-bold text-amber-300 flex items-center gap-2 mb-2">
+        <span>📜</span> 歌劇院的封閉通道
+      </h2>
+      <p class="text-stone-300 text-xs md:text-sm leading-relaxed">
+        大幕即將升起，但後台通往主舞台的密碼門已被四位歌劇大師的謎題鎖上！<br class="hidden sm:inline">
+        請依序調查<strong>「史料檔案室」</strong>、<strong>「莫札特化妝間」</strong>、<strong>「華格納總譜台」</strong>與<strong>「浦契尼排練琴」</strong>，蒐集 4 碼通關密碼！
+      </p>
+    </div>
+
+    <!-- 探索卡片儀表板 (四個關卡) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+
+      <!-- 關卡 1：歌劇起源 -->
+      <div onclick="openClueModal('origin')" class="bg-stone-900/80 border border-stone-800 hover:border-amber-500 rounded-2xl p-5 cursor-pointer card-transition flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-start mb-3">
+            <span class="text-3xl">🏛️</span>
+            <span id="badge-origin" class="text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded">未完成</span>
+          </div>
+          <h3 class="font-bold text-amber-200 text-sm mb-1">起源史料室</h3>
+          <p class="text-stone-400 text-xs leading-relaxed">探尋 16 世紀末佛羅倫斯同好會與世界首座公共歌劇院的誕生年分。</p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-stone-800/80 flex justify-between items-center text-xs text-amber-400">
+          <span id="status-origin">點擊查閱史料</span>
+          <span>➜</span>
+        </div>
+      </div>
+
+      <!-- 關卡 2：莫札特作品 -->
+      <div onclick="openClueModal('mozart')" class="bg-stone-900/80 border border-stone-800 hover:border-amber-500 rounded-2xl p-5 cursor-pointer card-transition flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-start mb-3">
+            <span class="text-3xl">🪞</span>
+            <span id="badge-mozart" class="text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded">未完成</span>
+          </div>
+          <h3 class="font-bold text-amber-200 text-sm mb-1">莫札特化妝間</h3>
+          <p class="text-stone-400 text-xs leading-relaxed">《費加洛婚禮》後台，正尋找那位由次女高音反串演出的多情男僕名牌。</p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-stone-800/80 flex justify-between items-center text-xs text-amber-400">
+          <span id="status-mozart">點擊辨識角色</span>
+          <span>➜</span>
+        </div>
+      </div>
+
+      <!-- 關卡 3：華格納樂劇 -->
+      <div onclick="openClueModal('wagner')" class="bg-stone-900/80 border border-stone-800 hover:border-amber-500 rounded-2xl p-5 cursor-pointer card-transition flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-start mb-3">
+            <span class="text-3xl">🛡️</span>
+            <span id="badge-wagner" class="text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded">未完成</span>
+          </div>
+          <h3 class="font-bold text-amber-200 text-sm mb-1">華格納總譜台</h3>
+          <p class="text-stone-400 text-xs leading-relaxed">《尼貝龍根的指環》龐大編制，女武神騎著飛馬護送英靈的招牌作曲技法。</p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-stone-800/80 flex justify-between items-center text-xs text-amber-400">
+          <span id="status-wagner">點擊分析總譜</span>
+          <span>➜</span>
+        </div>
+      </div>
+
+      <!-- 關卡 4：浦契尼琴房 -->
+      <div onclick="openClueModal('puccini')" class="bg-stone-900/80 border border-stone-800 hover:border-amber-500 rounded-2xl p-5 cursor-pointer card-transition flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-start mb-3">
+            <span class="text-3xl">🎹</span>
+            <span id="badge-puccini" class="text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded">未完成</span>
+          </div>
+          <h3 class="font-bold text-amber-200 text-sm mb-1">浦契尼排練琴</h3>
+          <p class="text-stone-400 text-xs leading-relaxed">《杜蘭朵公主》採用中國民謠《茉莉花》，在鍵盤上彈出招牌旋律片段。</p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-stone-800/80 flex justify-between items-center text-xs text-amber-400">
+          <span id="status-puccini">點擊彈奏試音</span>
+          <span>➜</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 逃脫密碼門輸入區 -->
+    <div class="bg-stone-900/95 border border-amber-700/50 rounded-2xl p-5 md:p-6 mt-auto flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl">
+      <div class="text-center md:text-left">
+        <h3 class="text-amber-200 font-bold text-base flex items-center justify-center md:justify-start gap-2">
+          <span>🚪</span> 歌劇院後台出口密碼鎖
+        </h3>
+        <p class="text-xs text-stone-400 mt-1">集齊上述 4 道考驗獲得的密碼數字，依序輸入開啟舞台大門！</p>
+      </div>
+      <div class="flex items-center space-x-2 w-full md:w-auto justify-center">
+        <input type="text" id="final-code" placeholder="4 碼密碼" maxlength="4"
+               class="bg-stone-950 border border-amber-600/60 rounded-xl px-4 py-2 text-center font-mono tracking-widest text-amber-300 w-36 focus:outline-none focus:ring-2 focus:ring-amber-500 text-lg">
+        <button onclick="verifyEscape()" class="bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold px-6 py-2.5 rounded-xl transition shadow">
+          解鎖登台
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 燈箱視窗 (Modal) -->
+  <div id="modal-container" style="display: none;" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-stone-900 border border-amber-600/50 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-stone-400 hover:text-white text-xl p-1">✕</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       1. 音訊核心（Web Audio API）
+    ========================================================= */
+    const Sound = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContextClass();
+        }
+      },
+      play(freq, type = 'sine', duration = 0.45) {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + duration);
+      },
+      success() {
+        this.play(523.25, 'triangle', 0.2); // C5
+        setTimeout(() => this.play(659.25, 'triangle', 0.2), 120); // E5
+        setTimeout(() => this.play(783.99, 'triangle', 0.4), 240); // G5
+      },
+      error() {
+        this.play(200, 'sawtooth', 0.25);
+      }
+    };
+
+    const NOTE_FREQS = {
+      'E4': 329.63,
+      'G4': 392.00,
+      'A4': 440.00,
+      'C5': 523.25,
+      'D5': 587.33
+    };
+
+    /* =========================================================
+       2. 遊戲狀態管理
+    ========================================================= */
+    const gameState = {
+      originSolved: false,   // 密碼：1 (世界第一部歌劇《達芙尼》/ 現存最早《尤麗狄斯》誕生在1600年前後)
+      mozartSolved: false,   // 密碼：6 (莫札特《費加洛婚禮》凱魯比諾由次女高音反串)
+      wagnerSolved: false,   // 密碼：9 (華格納《女武神》9位女武神騎飛馬送英靈)
+      pucciniSolved: false,  // 密碼：7 (浦契尼《杜蘭朵》江蘇民謠《茉莉花》動機)
+      melodyInput: []
+    };
+
+    function updateProgress() {
+      let count = 0;
+      if (gameState.originSolved) count++;
+      if (gameState.mozartSolved) count++;
+      if (gameState.wagnerSolved) count++;
+      if (gameState.pucciniSolved) count++;
+      document.getElementById('progress-badge').textContent = `進度：${count} / 4 線索`;
+    }
+
+    /* =========================================================
+       3. 燈箱內容控制（嚴格優先使用 style.display）
+    ========================================================= */
+    function openClueModal(type) {
+      Sound.init();
+      const modal = document.getElementById('modal-container');
+      const box = document.getElementById('modal-content');
+
+      if (type === 'origin') {
+        box.innerHTML = `
+          <h3 class="text-base font-bold text-amber-300 mb-2">🏛️ 史料室：歌劇的誕生</h3>
+          <p class="text-xs text-stone-300 mb-3 leading-relaxed">
+            16世紀末，在義大利佛羅倫斯由巴爾第伯爵贊助的「同好會」，以復興古希臘戲劇為宗旨創作出了歌劇。<br>
+            請問：<strong>目前所知「最早被稱為歌劇」的作品為何？</strong>
+          </p>
+          <div class="space-y-2 mb-4">
+            <button onclick="checkOrigin(false)" class="w-full text-left p-2.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs border border-stone-700">A. 蒙台威爾第《奧菲歐》</button>
+            <button onclick="checkOrigin(true)" class="w-full text-left p-2.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs border border-stone-700">B. 佩里與里努奇尼《達芙尼》(Dafne, 1597)</button>
+            <button onclick="checkOrigin(false)" class="w-full text-left p-2.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs border border-stone-700">C. 佩里《尤麗狄斯》(Euridice, 1600)</button>
+          </div>
+          <p class="text-[11px] text-stone-500">提示：該作品以希臘神話河神之女為題材，可惜今日已失傳。</p>
+        `;
+      } else if (type === 'mozart') {
+        box.innerHTML = `
+          <h3 class="text-base font-bold text-amber-300 mb-2">🪞 莫札特化妝室：《費加洛婚禮》</h3>
+          <p class="text-xs text-stone-300 mb-3 leading-relaxed">
+            在莫札特四幕喜歌劇《費加洛婚禮》中，有位多愁善感、唱出名曲〈情為何物〉的年輕男僕，在劇院中<strong>通常由「次女高音(Mezzo Soprano)」反串演出</strong>。<br>
+            請問這位角色的名字是？
+          </p>
+          <div class="space-y-2 mb-4">
+            <button onclick="checkMozart(false)" class="w-full text-left p-2.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs border border-stone-700">A. 阿爾瑪維瓦伯爵 (Count Almaviva)</button>
+            <button onclick="checkMozart(false)" class="w-full text-left p-2.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs border border-stone-700">B. 費加洛 (Figaro)</button>
+            <button onclick="checkMozart(true)" class="w-full text-left p-2.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs border border-stone-700">C. 凱魯比諾 (Cherubino)</button>
+          </div>
+        `;
+      } else if (type === 'wagner') {
+        box.innerHTML = `
+          <h3 class="text-base font-bold text-amber-300 mb-2">🛡️ 華格納總譜台：《女武神》</h3>
+          <p class="text-xs text-stone-300 mb-3 leading-relaxed">
+            華格納耗時 26 年完成四部曲《尼貝龍根的指環》。在第二部《女武神》第三幕開頭，著名樂曲《女武神的飛行》描繪了<strong>幾位女武神</strong>騎著飛馬穿梭雷雨雲端、護送英靈？
+          </p>
+          <div class="space-y-2 mb-4">
+            <button onclick="checkWagner(false)" class="w-full text-left p-2.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs border border-stone-700">A. 3 位女武神</button>
+            <button onclick="checkWagner(false)" class="w-full text-left p-2.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs border border-stone-700">B. 7 位女武神</button>
+            <button onclick="checkWagner(true)" class="w-full text-left p-2.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-xs border border-stone-700">C. 9 位女武神</button>
+          </div>
+          <p class="text-[11px] text-stone-500">提示：眾神之王沃坦的女兒們，運用緊湊的銅管與「主導動機」技法烘托氣勢。</p>
+        `;
+      } else if (type === 'puccini') {
+        gameState.melodyInput = [];
+        box.innerHTML = `
+          <h3 class="text-base font-bold text-amber-300 mb-2">🎹 浦契尼琴房：《杜蘭朵公主》動機</h3>
+          <p class="text-xs text-stone-300 mb-2 leading-relaxed">
+            浦契尼在《杜蘭朵公主》中採用中國江蘇民謠《茉莉花》貫穿全劇。<br>
+            請依序按下琴鍵彈奏出茉莉花的前奏三個五聲音階音符：<br>
+            <span class="text-amber-300 font-bold">E4 ➔ G4 ➔ A4</span>
+          </p>
+          <div class="flex justify-center gap-2 bg-stone-950 p-4 rounded-xl border border-stone-800 mb-3">
+            ${['E4','G4','A4','C5','D5'].map(note => `
+              <button onclick="pressKey('${note}')"
+                      class="bg-stone-100 hover:bg-amber-100 active:bg-amber-300 text-stone-900 font-bold w-12 h-24 rounded-b flex flex-col justify-end items-center pb-2 text-xs shadow transition">
+                ${note}
+              </button>
+            `).join('')}
+          </div>
+          <div id="puccini-feedback" class="text-center text-xs text-stone-400">等待輸入中...</div>
+        `;
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('modal-container');
+      modal.style.display = 'none';
+    }
+
+    /* =========================================================
+       4. 關卡驗證邏輯
+    ========================================================= */
+    function checkOrigin(isCorrect) {
+      if (isCorrect) {
+        gameState.originSolved = true;
+        Sound.success();
+        document.getElementById('badge-origin').textContent = '已解開';
+        document.getElementById('badge-origin').className = 'text-[11px] bg-amber-900/60 text-amber-300 px-2 py-0.5 rounded border border-amber-600/40';
+        document.getElementById('status-origin').innerHTML = '✅ 第 1 碼：<strong class="text-amber-300 text-sm">1</strong>';
+        updateProgress();
+        alert('答對了！1597年《達芙尼》是已知最早被稱為歌劇的作品！獲得第 1 碼密碼：【 1 】');
+        closeModal();
+      } else {
+        Sound.error();
+        alert('答案不對喔！請複習「歌劇起源」：現存最古老是《尤麗狄斯》，而最早被稱為歌劇但已失傳的是哪一部？');
+      }
+    }
+
+    function checkMozart(isCorrect) {
+      if (isCorrect) {
+        gameState.mozartSolved = true;
+        Sound.success();
+        document.getElementById('badge-mozart').textContent = '已解開';
+        document.getElementById('badge-mozart').className = 'text-[11px] bg-amber-900/60 text-amber-300 px-2 py-0.5 rounded border border-amber-600/40';
+        document.getElementById('status-mozart').innerHTML = '✅ 第 2 碼：<strong class="text-amber-300 text-sm">6</strong>';
+        updateProgress();
+        alert('答對了！凱魯比諾常由次女高音反串，唱出青春期愛情的迷惘！獲得第 2 碼密碼：【 6 】');
+        closeModal();
+      } else {
+        Sound.error();
+        alert('錯誤！請參考教材中《費加洛婚禮》的角色關係圖與聲部說明。');
+      }
+    }
+
+    function checkWagner(isCorrect) {
+      if (isCorrect) {
+        gameState.wagnerSolved = true;
+        Sound.success();
+        document.getElementById('badge-wagner').textContent = '已解開';
+        document.getElementById('badge-wagner').className = 'text-[11px] bg-amber-900/60 text-amber-300 px-2 py-0.5 rounded border border-amber-600/40';
+        document.getElementById('status-wagner').innerHTML = '✅ 第 3 碼：<strong class="text-amber-300 text-sm">9</strong>';
+        updateProgress();
+        alert('答對了！共有 9 位女武神穿梭雷雨雲端！獲得第 3 碼密碼：【 9 】');
+        closeModal();
+      } else {
+        Sound.error();
+        alert('數量不正確！請看課本《女武神的飛行》介紹：眾神之王沃坦的幾位女兒們？');
+      }
+    }
+
+    function pressKey(note) {
+      Sound.play(NOTE_FREQS[note]);
+      gameState.melodyInput.push(note);
+      const target = ['E4', 'G4', 'A4'];
+      const current = gameState.melodyInput.slice(-3);
+
+      const fb = document.getElementById('puccini-feedback');
+      if (fb) fb.textContent = `當前音符：${gameState.melodyInput.slice(-4).join(' ➔ ')}`;
+
+      if (current.length === 3 && current[0] === target[0] && current[1] === target[1] && current[2] === target[2]) {
+        gameState.pucciniSolved = true;
+        Sound.success();
+        document.getElementById('badge-puccini').textContent = '已解開';
+        document.getElementById('badge-puccini').className = 'text-[11px] bg-amber-900/60 text-amber-300 px-2 py-0.5 rounded border border-amber-600/40';
+        document.getElementById('status-puccini').innerHTML = '✅ 第 4 碼：<strong class="text-amber-300 text-sm">7</strong>';
+        updateProgress();
+        setTimeout(() => {
+          alert('《茉莉花》動機彈奏正確！融化了冷酷公主的心。獲得第 4 碼密碼：【 7 】');
+          closeModal();
+        }, 200);
+      }
+    }
+
+    function verifyEscape() {
+      const code = document.getElementById('final-code').value.trim();
+      // 正確 4 碼密碼：1697
+      if (code === '1697') {
+        Sound.success();
+        alert('🎉【恭喜通關！】密碼正確！四位大師的經典試煉全數解開，舞台大幕升起，首演成功！');
+      } else {
+        Sound.error();
+        alert('❌ 密碼錯誤！請先解開房內 4 道歌劇線索（取得正確的 4 碼數字）。');
+      }
+    }
+
+    function resetGame() {
+      gameState.originSolved = false;
+      gameState.mozartSolved = false;
+      gameState.wagnerSolved = false;
+      gameState.pucciniSolved = false;
+      gameState.melodyInput = [];
+
+      ['origin', 'mozart', 'wagner', 'puccini'].forEach(id => {
+        document.getElementById(`badge-${id}`).textContent = '未完成';
+        document.getElementById(`badge-${id}`).className = 'text-[11px] bg-stone-800 text-stone-400 px-2 py-0.5 rounded';
+      });
+
+      document.getElementById('status-origin').textContent = '點擊查閱史料';
+      document.getElementById('status-mozart').textContent = '點擊辨識角色';
+      document.getElementById('status-wagner').textContent = '點擊分析總譜';
+      document.getElementById('status-puccini').textContent = '點擊彈奏試音';
+      document.getElementById('final-code').value = '';
+
+      updateProgress();
+      closeModal();
+    }
+  </script>
+</body>
+</html>
